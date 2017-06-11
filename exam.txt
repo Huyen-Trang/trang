@@ -1,0 +1,118 @@
+#include <iostream>
+#include <conio.h>
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <iomanip>
+using namespace std;
+
+class People {
+protected:
+    char Name[50];
+    char SecurityNumber[10];
+    float Salary;
+public:
+    People ();
+    virtual void calculateSalary() = 0;
+    void Output()const ;
+    virtual void Input();
+};
+
+People::People() {
+    strcpy(Name,"");
+    strcpy(SecurityNumber,"");
+    Salary = 0;
+}
+
+void People::Output() const {
+    cout<<"Ma so: "<<SecurityNumber<<",\tHo ten: "<<Name<<",\tluong: "<<setiosflags(ios::fixed)<<setprecision(0)<<Salary<<endl;
+}
+
+void People::Input() {
+    cout<<"Nhap ma so:\t";
+    cin>>SecurityNumber;
+    cin.ignore();
+    cout<<"Nhap ho ten:\t";
+    cin.getline(Name, 50);
+}
+
+class PartTime : public People {
+protected:
+     int Workdate; //so ngay cong
+   //  float Coefficient; // he so vuot gio
+public:
+    PartTime();
+    virtual void Input();
+    virtual void calculateSalary();
+
+};
+
+PartTime::PartTime(){
+    Workdate = 0;
+   // Coefficient = 0;
+}
+
+void PartTime::Input() {
+    People::Input();
+    cout<<"Nhap so ngay cong\t";
+    cin>>Workdate;
+}
+
+void PartTime:: calculateSalary() {
+    if(Workdate > 20) Salary = 1.5 * 150000 * Workdate;
+    if(Workdate < 10) Salary = 0.8 *150000 * Workdate;
+    if((Workdate >= 10) && (Workdate <= 20)) Salary = 150000 * Workdate;
+}
+
+class Regular : public People {
+protected:
+    float Rate; //he so luong
+    float Benefit; //tro cap
+public:
+    Regular();
+    virtual void Input();
+    virtual void calculateSalary();
+};
+
+Regular::Regular() {
+    Rate = Benefit = 0;
+}
+
+void Regular::Input() {
+    People::Input();
+    cout<<"Nhap he so luong:\t";
+    cin>>Rate;
+    cout<<"Nhap phu cap:\t";
+    cin>>Benefit;
+}
+
+void Regular::calculateSalary() {
+    Salary = 1210000 * Rate + Benefit;
+}
+
+int main() {
+    People *Nguoi[100];
+    int n = 0;
+    char select, kind;
+    do {
+        cout<<"La nhan vien bien che hay hop dong (P/R)? \t";
+        cin>>kind;
+            kind = toupper(kind);
+        if(kind == 'R')
+            Nguoi[n] = new Regular;
+        else
+            Nguoi[n] = new PartTime;
+        Nguoi[n++]->Input();
+        cout<<"Ban co tiep tuc (Y/N)?\t";
+        cin>>select;
+        select = toupper(select);
+        if(select == 'N') break;
+    }
+    while (1);
+    for(int i = 0; i < n; ++i) {
+        Nguoi[i]->calculateSalary();
+        Nguoi[i]->Output();
+    }
+    return 0;
+}
